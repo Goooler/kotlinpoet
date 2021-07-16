@@ -46,11 +46,11 @@ public class ClassName internal constructor(
    */
   public constructor(packageName: String, vararg simpleNames: String) :
     this(listOf(packageName, *simpleNames)) {
-      require(simpleNames.isNotEmpty()) { "simpleNames must not be empty" }
-      require(simpleNames.none { it.isEmpty() }) {
-        "simpleNames must not contain empty items: ${simpleNames.contentToString()}"
-      }
+    require(simpleNames.isNotEmpty()) { "simpleNames must not be empty" }
+    require(simpleNames.none { it.isEmpty() }) {
+      "simpleNames must not contain empty items: ${simpleNames.contentToString()}"
     }
+  }
 
   /**
    * Returns a class name created from the given parts. For example, calling this with package name
@@ -58,11 +58,11 @@ public class ClassName internal constructor(
    */
   public constructor(packageName: String, simpleNames: List<String>) :
     this(mutableListOf(packageName).apply { addAll(simpleNames) }) {
-      require(simpleNames.isNotEmpty()) { "simpleNames must not be empty" }
-      require(simpleNames.none { it.isEmpty() }) {
-        "simpleNames must not contain empty items: $simpleNames"
-      }
+    require(simpleNames.isNotEmpty()) { "simpleNames must not be empty" }
+    require(simpleNames.none { it.isEmpty() }) {
+      "simpleNames must not contain empty items: $simpleNames"
     }
+  }
 
   /** From top to bottom. This will be `["java.util", "Map", "Entry"]` for `Map.Entry`. */
   private val names = names.toImmutableList()

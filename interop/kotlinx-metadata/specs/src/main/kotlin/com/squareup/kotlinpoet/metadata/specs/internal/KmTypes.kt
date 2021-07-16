@@ -178,6 +178,7 @@ private fun ImmutableKmFlexibleTypeUpperBound.toTypeName(
   // TODO tag typeFlexibilityId somehow?
   return WildcardTypeName.producerOf(type.toTypeName(typeParamResolver))
 }
+
 internal interface TypeParameterResolver {
   val parametersMap: Map<Int, TypeVariableName>
   operator fun get(index: Int): TypeVariableName
@@ -186,7 +187,8 @@ internal interface TypeParameterResolver {
     val EMPTY = object : TypeParameterResolver {
       override val parametersMap: Map<Int, TypeVariableName> = emptyMap()
 
-      override fun get(index: Int): TypeVariableName = throw NoSuchElementException("No type parameters!")
+      override fun get(index: Int): TypeVariableName =
+        throw NoSuchElementException("No type parameters!")
     }
   }
 }

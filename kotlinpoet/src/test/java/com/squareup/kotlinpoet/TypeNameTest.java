@@ -34,12 +34,16 @@ public class TypeNameTest {
     return values[0];
   }
 
-  protected static class TestGeneric<T> {
-    class Inner {}
+  @Test public void innerClassInGenericType() throws Exception {
+    Method genericStringInner = getClass().getDeclaredMethod("testGenericStringInner");
+    TypeNames.get(genericStringInner.getReturnType());
+    TypeName genericTypeName = TypeNames.get(genericStringInner.getGenericReturnType());
+    assertNotEquals(TypeNames.get(genericStringInner.getGenericReturnType()),
+      TypeNames.get(getClass().getDeclaredMethod("testGenericIntInner").getGenericReturnType()));
 
-    class InnerGeneric<T2> {}
-
-    static class NestedNonGeneric {}
+    // Make sure the generic argument is present
+    assertThat(genericTypeName.toString()).isEqualTo(
+      TestGeneric.class.getCanonicalName() + "<java.lang.String>.Inner");
   }
 
   protected static TestGeneric<String>.Inner testGenericStringInner() {
@@ -73,28 +77,16 @@ public class TypeNameTest {
     assertThat(genericTypeName.toString()).contains("Enum");
   }
 
-  @Test public void innerClassInGenericType() throws Exception {
-    Method genericStringInner = getClass().getDeclaredMethod("testGenericStringInner");
-    TypeNames.get(genericStringInner.getReturnType());
-    TypeName genericTypeName = TypeNames.get(genericStringInner.getGenericReturnType());
-    assertNotEquals(TypeNames.get(genericStringInner.getGenericReturnType()),
-        TypeNames.get(getClass().getDeclaredMethod("testGenericIntInner").getGenericReturnType()));
-
-    // Make sure the generic argument is present
-    assertThat(genericTypeName.toString()).isEqualTo(
-        TestGeneric.class.getCanonicalName() + "<java.lang.String>.Inner");
-  }
-
   @Test public void innerGenericInGenericType() throws Exception {
     Method genericStringInner = getClass().getDeclaredMethod("testGenericInnerLong");
     TypeNames.get(genericStringInner.getReturnType());
     TypeName genericTypeName = TypeNames.get(genericStringInner.getGenericReturnType());
     assertNotEquals(TypeNames.get(genericStringInner.getGenericReturnType()),
-        TypeNames.get(getClass().getDeclaredMethod("testGenericInnerInt").getGenericReturnType()));
+      TypeNames.get(getClass().getDeclaredMethod("testGenericInnerInt").getGenericReturnType()));
 
     // Make sure the generic argument is present
     assertThat(genericTypeName.toString()).isEqualTo(
-        TestGeneric.class.getCanonicalName() + "<java.lang.Short>.InnerGeneric<java.lang.Long>");
+      TestGeneric.class.getCanonicalName() + "<java.lang.Short>.InnerGeneric<java.lang.Long>");
   }
 
   @Test public void innerStaticInGenericType() throws Exception {
@@ -104,7 +96,14 @@ public class TypeNameTest {
 
     // Make sure there are no generic arguments
     assertThat(typeName.toString()).isEqualTo(
-        TestGeneric.class.getCanonicalName() + ".NestedNonGeneric");
+      TestGeneric.class.getCanonicalName() + ".NestedNonGeneric");
+  }
+
+  @Test public void equalsAndHashCodeClassName() {
+    assertEqualsHashCodeAndToString(ClassNames.get(Object.class), ClassNames.get(Object.class));
+    assertEqualsHashCodeAndToString(TypeNames.get(Object.class), ClassNames.get(Object.class));
+    assertEqualsHashCodeAndToString(ClassName.bestGuess("java.lang.Object"),
+      ClassNames.get(Object.class));
   }
 
   @Test public void equalsAndHashCodePrimitive() {
@@ -119,25 +118,18 @@ public class TypeNameTest {
     assertEqualsHashCodeAndToString(TypeNames.UNIT, TypeNames.UNIT);
   }
 
-  @Test public void equalsAndHashCodeClassName() {
-    assertEqualsHashCodeAndToString(ClassNames.get(Object.class), ClassNames.get(Object.class));
-    assertEqualsHashCodeAndToString(TypeNames.get(Object.class), ClassNames.get(Object.class));
-    assertEqualsHashCodeAndToString(ClassName.bestGuess("java.lang.Object"),
-        ClassNames.get(Object.class));
-  }
-
   @Test public void equalsAndHashCodeParameterizedTypeName() {
     assertEqualsHashCodeAndToString(ParameterizedTypeName.get(List.class, Object.class),
-        ParameterizedTypeName.get(List.class, Object.class));
+      ParameterizedTypeName.get(List.class, Object.class));
     assertEqualsHashCodeAndToString(ParameterizedTypeName.get(Set.class, UUID.class),
-        ParameterizedTypeName.get(Set.class, UUID.class));
+      ParameterizedTypeName.get(Set.class, UUID.class));
     assertNotEquals(ClassNames.get(List.class), ParameterizedTypeName.get(List.class,
-        String.class));
+      String.class));
   }
 
   @Test public void equalsAndHashCodeTypeVariableName() {
     assertEqualsHashCodeAndToString(TypeVariableName.get("A"),
-        TypeVariableName.get("A"));
+      TypeVariableName.get("A"));
     TypeVariableName typeVar1 = TypeVariableName.get("T", Comparator.class, Serializable.class);
     TypeVariableName typeVar2 = TypeVariableName.get("T", Comparator.class, Serializable.class);
     assertEqualsHashCodeAndToString(typeVar1, typeVar2);
@@ -145,11 +137,22 @@ public class TypeNameTest {
 
   @Test public void equalsAndHashCodeWildcardTypeName() {
     assertEqualsHashCodeAndToString(WildcardTypeName.producerOf(Object.class),
-        WildcardTypeName.producerOf(Object.class));
+      WildcardTypeName.producerOf(Object.class));
     assertEqualsHashCodeAndToString(WildcardTypeName.producerOf(Serializable.class),
-        WildcardTypeName.producerOf(Serializable.class));
+      WildcardTypeName.producerOf(Serializable.class));
     assertEqualsHashCodeAndToString(WildcardTypeName.consumerOf(String.class),
-        WildcardTypeName.consumerOf(String.class));
+      WildcardTypeName.consumerOf(String.class));
+  }
+
+  protected static class TestGeneric<T> {
+    static class NestedNonGeneric {
+    }
+
+    class Inner {
+    }
+
+    class InnerGeneric<T2> {
+    }
   }
 
   private void assertEqualsHashCodeAndToString(TypeName a, TypeName b) {

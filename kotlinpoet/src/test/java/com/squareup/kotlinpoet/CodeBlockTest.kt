@@ -444,7 +444,8 @@ class CodeBlockTest {
   }
 
   @Test fun joinToCode() {
-    val blocks = listOf(CodeBlock.of("%L", "taco1"), CodeBlock.of("%L", "taco2"), CodeBlock.of("%L", "taco3"))
+    val blocks =
+      listOf(CodeBlock.of("%L", "taco1"), CodeBlock.of("%L", "taco2"), CodeBlock.of("%L", "taco3"))
     assertThat(blocks.joinToCode(prefix = "(", suffix = ")"))
       .isEqualTo(CodeBlock.of("(%L, %L, %L)", "taco1", "taco2", "taco3"))
   }

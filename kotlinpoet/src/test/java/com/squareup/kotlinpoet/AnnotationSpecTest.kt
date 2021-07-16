@@ -20,11 +20,11 @@ import com.google.testing.compile.CompilationRule
 import com.squareup.kotlinpoet.KModifier.OVERRIDE
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.plusParameter
-import org.junit.Rule
 import java.lang.annotation.Inherited
 import kotlin.annotation.AnnotationRetention.RUNTIME
 import kotlin.reflect.KClass
 import kotlin.test.Test
+import org.junit.Rule
 
 class AnnotationSpecTest {
 
@@ -39,7 +39,8 @@ class AnnotationSpecTest {
   annotation class AnnotationC(val value: String)
 
   enum class Breakfast {
-    WAFFLES, PANCAKES;
+    WAFFLES,
+    PANCAKES;
 
     override fun toString(): String {
       return name + " with cherries!"
@@ -555,33 +556,29 @@ class AnnotationSpecTest {
       import kotlin.Int
       import kotlin.Unit
 
-      public class ExternalClass(
-        public val `value`: Int
+      class ExternalClass(
+        val `value`: Int
       )
 
-      public object ExternalClassParceler : Parceler<ExternalClass> {
-        public override fun create(parcel: Parcel) = ExternalClass(parcel.readInt())
+      object ExternalClassParceler : Parceler<ExternalClass> {
+        override fun create(parcel: Parcel) = ExternalClass(parcel.readInt())
 
-        public override fun ExternalClass.write(parcel: Parcel, flags: Int): Unit {
+        override fun ExternalClass.write(parcel: Parcel, flags: Int): Unit {
           parcel.writeInt(value)
         }
       }
 
       @Parcelize
-      @TypeParceler<ExternalClass, ExternalClassParceler>
-      public class MyClass(
-        public val `external`: ExternalClass
+      @TypeParceler<ExternalClass, ExternalClassParceler>       class MyClass(
+        val `external`: ExternalClass
       )
 
-      @Parcelize
-      public class MyClass(
-        @TypeParceler<ExternalClass, ExternalClassParceler>
-        public val `external`: ExternalClass
+      @Parcelize       class MyClass(
+        @TypeParceler<ExternalClass, ExternalClassParceler>       val `external`: ExternalClass
       )
 
-      @Parcelize
-      public class MyClass(
-        public val `external`: @WriteWith<ExternalClassParceler> ExternalClass
+      @Parcelize       class MyClass(
+        val `external`: @WriteWith<ExternalClassParceler> ExternalClass
       )
 
       """.trimIndent()

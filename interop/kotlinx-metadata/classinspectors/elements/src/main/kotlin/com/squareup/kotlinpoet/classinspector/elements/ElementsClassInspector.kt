@@ -46,9 +46,6 @@ import com.squareup.kotlinpoet.metadata.specs.internal.ClassInspectorUtil.JVM_NA
 import com.squareup.kotlinpoet.metadata.specs.internal.ClassInspectorUtil.filterOutNullabilityAnnotations
 import com.squareup.kotlinpoet.metadata.toImmutableKmClass
 import com.squareup.kotlinpoet.metadata.toImmutableKmPackage
-import kotlinx.metadata.jvm.JvmFieldSignature
-import kotlinx.metadata.jvm.JvmMethodSignature
-import kotlinx.metadata.jvm.KotlinClassMetadata
 import java.util.concurrent.ConcurrentHashMap
 import javax.lang.model.element.Element
 import javax.lang.model.element.ElementKind.INTERFACE
@@ -61,6 +58,9 @@ import javax.lang.model.util.ElementFilter
 import javax.lang.model.util.Elements
 import javax.lang.model.util.Types
 import kotlin.LazyThreadSafetyMode.NONE
+import kotlinx.metadata.jvm.JvmFieldSignature
+import kotlinx.metadata.jvm.JvmMethodSignature
+import kotlinx.metadata.jvm.KotlinClassMetadata
 
 private typealias ElementsModifier = javax.lang.model.element.Modifier
 
@@ -73,8 +73,10 @@ public class ElementsClassInspector private constructor(
   private val types: Types
 ) : ClassInspector {
   private val typeElementCache = ConcurrentHashMap<ClassName, Optional<TypeElement>>()
-  private val methodCache = ConcurrentHashMap<Pair<TypeElement, String>, Optional<ExecutableElement>>()
-  private val variableElementCache = ConcurrentHashMap<Pair<TypeElement, String>, Optional<VariableElement>>()
+  private val methodCache =
+    ConcurrentHashMap<Pair<TypeElement, String>, Optional<ExecutableElement>>()
+  private val variableElementCache =
+    ConcurrentHashMap<Pair<TypeElement, String>, Optional<VariableElement>>()
   private val jvmNameType = elements.getTypeElement(JVM_NAME.canonicalName)
   private val jvmNameName = ElementFilter.methodsIn(jvmNameType.enclosedElements)
     .first { it.simpleName.toString() == "name" }
@@ -287,7 +289,8 @@ public class ElementsClassInspector private constructor(
     className: ClassName,
     parentClassName: ClassName?
   ): ContainerData {
-    val typeElement: TypeElement = lookupTypeElement(className) ?: error("No class found for: $className.")
+    val typeElement: TypeElement =
+      lookupTypeElement(className) ?: error("No class found for: $className.")
     val isCompanionObject = when (declarationContainer) {
       is ImmutableKmClass -> {
         declarationContainer.isCompanionObject
@@ -398,8 +401,9 @@ public class ElementsClassInspector private constructor(
         val annotations = mutableListOf<AnnotationSpec>()
         if (property.hasAnnotations) {
           property.syntheticMethodForAnnotations?.let { annotationsHolderSignature ->
-            val method = typeElement.lookupMethod(annotationsHolderSignature, ElementFilter::methodsIn)
-              ?: return@let MethodData.SYNTHETIC
+            val method =
+              typeElement.lookupMethod(annotationsHolderSignature, ElementFilter::methodsIn)
+                ?: return@let MethodData.SYNTHETIC
             annotations += method.annotationSpecs()
           }
         }
@@ -565,6 +569,7 @@ public class ElementsClassInspector private constructor(
  * TODO: Make this an inline class when inline classes are stable.
  */
 private data class Optional<out T : Any>(val nullableValue: T?)
+
 private fun <T : Any> T?.toOptional(): Optional<T> = Optional(
   this
 )

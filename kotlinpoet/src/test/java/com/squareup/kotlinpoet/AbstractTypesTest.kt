@@ -68,9 +68,9 @@ abstract class AbstractTypesTest {
     ExtendsClass : Number,
     ExtendsInterface : Runnable,
     ExtendsTypeVariable : Simple,
-    Intersection : Number,
-    IntersectionOfInterfaces : Runnable>
-  where Intersection : Runnable, IntersectionOfInterfaces : Serializable
+    Intersection,
+    IntersectionOfInterfaces>
+    where Intersection : Number, IntersectionOfInterfaces : Runnable, Intersection : Runnable, IntersectionOfInterfaces : Serializable
 
   @Test fun getTypeVariableTypeMirror() {
     val typeVariables = getElement(Parameterized::class.java).typeParameters
@@ -102,7 +102,7 @@ abstract class AbstractTypesTest {
     val typeMirror = getElement(Recursive::class.java).asType()
     val typeName = typeMirror.asTypeName() as ParameterizedTypeName
     val className = Recursive::class.java.canonicalName
-    assertThat(typeName.toString()).isEqualTo(className + "<T>")
+    assertThat(typeName.toString()).isEqualTo("$className<T>")
 
     val typeVariableName = typeName.typeArguments[0] as TypeVariableName
     assertThat(typeVariableName.toString()).isEqualTo("T")
@@ -190,15 +190,36 @@ abstract class AbstractTypesTest {
   @Test fun kType() {
     assertThat(Map::class.starProjectedType.asTypeName().toString())
       .isEqualTo("kotlin.collections.Map<*, *>")
-    assertThat(Map::class.createType(listOf(KTypeProjection(KVariance.INVARIANT, String::class.createType(emptyList())), KTypeProjection.STAR)).asTypeName().toString())
+    assertThat(
+      Map::class.createType(
+        listOf(
+          KTypeProjection(
+            KVariance.INVARIANT,
+            String::class.createType(emptyList())
+          ), KTypeProjection.STAR
+        )
+      ).asTypeName().toString()
+    )
       .isEqualTo("kotlin.collections.Map<kotlin.String, *>")
-    assertThat(Map.Entry::class.createType(listOf(KTypeProjection(KVariance.INVARIANT, String::class.createType(emptyList())), KTypeProjection.STAR)).asTypeName().toString())
+    assertThat(
+      Map.Entry::class.createType(
+        listOf(
+          KTypeProjection(
+            KVariance.INVARIANT,
+            String::class.createType(emptyList())
+          ), KTypeProjection.STAR
+        )
+      ).asTypeName().toString()
+    )
       .isEqualTo("kotlin.collections.Map.Entry<kotlin.String, *>")
     assertThat(Any::class.starProjectedType.withNullability(true).asTypeName().toString())
       .isEqualTo("kotlin.Any?")
 
     val treeMapClass = java.util.TreeMap::class
-    assertThat(treeMapClass.declaredFunctions.find { it.name == "parentOf" }!!.returnType.asTypeName().toString())
+    assertThat(
+      treeMapClass.declaredFunctions.find { it.name == "parentOf" }!!.returnType.asTypeName()
+        .toString()
+    )
       .isEqualTo("java.util.TreeMap.Entry<K, V>")
   }
 
@@ -211,12 +232,14 @@ abstract class AbstractTypesTest {
 
     override fun getKind() = declaredType.kind
 
-    override fun <R, P> accept(typeVisitor: TypeVisitor<R, P>, p: P) = typeVisitor.visitError(this, p)
+    override fun <R, P> accept(typeVisitor: TypeVisitor<R, P>, p: P) =
+      typeVisitor.visitError(this, p)
 
     override fun <A : Annotation> getAnnotationsByType(annotationType: Class<A>): Array<A> =
       throw UnsupportedOperationException()
 
-    override fun <A : Annotation> getAnnotation(annotationType: Class<A>): A = throw UnsupportedOperationException()
+    override fun <A : Annotation> getAnnotation(annotationType: Class<A>): A =
+      throw UnsupportedOperationException()
 
     override fun getAnnotationMirrors() = throw UnsupportedOperationException()
   }

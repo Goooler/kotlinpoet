@@ -137,7 +137,8 @@ class ValueTypeSpecTest(private val useValue: Boolean) {
         )
         .addProperty("garlic", String::class)
         .build()
-    }.hasMessageThat().isEqualTo("value/inline classes must have a single read-only (val) property parameter.")
+    }.hasMessageThat()
+      .isEqualTo("value/inline classes must have a single read-only (val) property parameter.")
   }
 
   @Test fun inlineClassWithoutProperties() {
@@ -167,7 +168,8 @@ class ValueTypeSpecTest(private val useValue: Boolean) {
             .build()
         )
         .build()
-    }.hasMessageThat().isEqualTo("value/inline classes must have a single read-only (val) property parameter.")
+    }.hasMessageThat()
+      .isEqualTo("value/inline classes must have a single read-only (val) property parameter.")
   }
 
   @Test

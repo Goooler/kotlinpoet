@@ -49,7 +49,14 @@ internal fun requireNoneOf(modifiers: Set<KModifier>, vararg forbidden: KModifie
   }
 }
 
-internal fun <T> T.isOneOf(t1: T, t2: T, t3: T? = null, t4: T? = null, t5: T? = null, t6: T? = null) =
+internal fun <T> T.isOneOf(
+  t1: T,
+  t2: T,
+  t3: T? = null,
+  t4: T? = null,
+  t5: T? = null,
+  t6: T? = null
+) =
   this == t1 || this == t2 || this == t3 || this == t4 || this == t5 || this == t6
 
 internal fun <T> Collection<T>.containsAnyOf(vararg t: T) = t.any(this::contains)
@@ -63,7 +70,7 @@ internal fun characterLiteralWithoutSingleQuotes(c: Char) = when {
   c == '\"' -> "\"" // \u0022: double quote (")
   c == '\'' -> "\\'" // \u0027: single quote (')
   c == '\\' -> "\\\\" // \u005c: backslash (\)
-  c.isIsoControl -> String.format("\\u%04x", c.toInt())
+  c.isIsoControl -> String.format("\\u%04x", c.code)
   else -> Character.toString(c)
 }
 
@@ -269,25 +276,28 @@ private fun String.failIfEscapeInvalid() {
   }
 }
 
-internal fun String.escapeIfNecessary(validate: Boolean = true): String = escapeIfNotJavaIdentifier()
-  .escapeIfKeyword()
-  .escapeIfHasAllowedCharacters()
-  .escapeIfAllCharactersAreUnderscore()
-  .apply { if (validate) failIfEscapeInvalid() }
+internal fun String.escapeIfNecessary(validate: Boolean = true): String =
+  escapeIfNotJavaIdentifier()
+    .escapeIfKeyword()
+    .escapeIfHasAllowedCharacters()
+    .escapeIfAllCharactersAreUnderscore()
+    .apply { if (validate) failIfEscapeInvalid() }
 
 private fun String.alreadyEscaped() = startsWith("`") && endsWith("`")
 
 private fun String.escapeIfKeyword() = if (isKeyword && !alreadyEscaped()) "`$this`" else this
 
-private fun String.escapeIfHasAllowedCharacters() = if (hasAllowedCharacters && !alreadyEscaped()) "`$this`" else this
+private fun String.escapeIfHasAllowedCharacters() =
+  if (hasAllowedCharacters && !alreadyEscaped()) "`$this`" else this
 
-private fun String.escapeIfAllCharactersAreUnderscore() = if (allCharactersAreUnderscore && !alreadyEscaped()) "`$this`" else this
+private fun String.escapeIfAllCharactersAreUnderscore() =
+  if (allCharactersAreUnderscore && !alreadyEscaped()) "`$this`" else this
 
 private fun String.escapeIfNotJavaIdentifier(): String {
   return if ((
-    !Character.isJavaIdentifierStart(first()) ||
-      drop(1).any { !Character.isJavaIdentifierPart(it) }
-    ) &&
+      !Character.isJavaIdentifierStart(first()) ||
+        drop(1).any { !Character.isJavaIdentifierPart(it) }
+      ) &&
     !alreadyEscaped()
   ) {
     "`$this`".replace(' ', '·')

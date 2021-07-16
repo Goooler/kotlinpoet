@@ -39,9 +39,6 @@ import com.squareup.kotlinpoet.metadata.specs.internal.ClassInspectorUtil
 import com.squareup.kotlinpoet.metadata.specs.internal.ClassInspectorUtil.filterOutNullabilityAnnotations
 import com.squareup.kotlinpoet.metadata.toImmutableKmClass
 import com.squareup.kotlinpoet.metadata.toImmutableKmPackage
-import kotlinx.metadata.jvm.JvmFieldSignature
-import kotlinx.metadata.jvm.JvmMethodSignature
-import kotlinx.metadata.jvm.KotlinClassMetadata
 import java.lang.reflect.Constructor
 import java.lang.reflect.Field
 import java.lang.reflect.Method
@@ -49,6 +46,9 @@ import java.lang.reflect.Modifier
 import java.lang.reflect.Parameter
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.LazyThreadSafetyMode.NONE
+import kotlinx.metadata.jvm.JvmFieldSignature
+import kotlinx.metadata.jvm.JvmMethodSignature
+import kotlinx.metadata.jvm.KotlinClassMetadata
 
 @KotlinPoetMetadataPreview
 public class ReflectiveClassInspector private constructor(
@@ -57,7 +57,8 @@ public class ReflectiveClassInspector private constructor(
 
   private val classCache = ConcurrentHashMap<ClassName, Optional<Class<*>>>()
   private val methodCache = ConcurrentHashMap<Pair<Class<*>, String>, Optional<Method>>()
-  private val constructorCache = ConcurrentHashMap<Pair<Class<*>, String>, Optional<Constructor<*>>>()
+  private val constructorCache =
+    ConcurrentHashMap<Pair<Class<*>, String>, Optional<Constructor<*>>>()
   private val fieldCache = ConcurrentHashMap<Pair<Class<*>, String>, Optional<Field>>()
   private val enumCache = ConcurrentHashMap<Pair<Class<*>, String>, Optional<Enum<*>>>()
 
@@ -413,7 +414,8 @@ public class ReflectiveClassInspector private constructor(
           clazz = targetClass,
           signature = signature,
           hasAnnotations = kmFunction.hasAnnotations,
-          jvmInformationMethod = classIfCompanion.takeIf { it != targetClass }?.lookupMethod(signature)
+          jvmInformationMethod = classIfCompanion.takeIf { it != targetClass }
+            ?.lookupMethod(signature)
             ?: method
         )
           ?: error("No method $signature found in $targetClass.")
@@ -426,7 +428,12 @@ public class ReflectiveClassInspector private constructor(
       is ImmutableKmClass -> {
         val classAnnotations = if (declarationContainer.hasAnnotations) {
           ClassInspectorUtil.createAnnotations {
-            addAll(targetClass.annotations.map { AnnotationSpec.get(it, includeDefaultValues = true) })
+            addAll(targetClass.annotations.map {
+              AnnotationSpec.get(
+                it,
+                includeDefaultValues = true
+              )
+            })
           }
         } else {
           emptyList()
@@ -476,7 +483,12 @@ public class ReflectiveClassInspector private constructor(
         // really matter, but it does mean we can't know for certain if the file should be called
         // FooKt.kt or Foo.kt.
         val fileAnnotations = ClassInspectorUtil.createAnnotations(FILE) {
-          addAll(targetClass.annotations.map { AnnotationSpec.get(it, includeDefaultValues = true) })
+          addAll(targetClass.annotations.map {
+            AnnotationSpec.get(
+              it,
+              includeDefaultValues = true
+            )
+          })
         }
         return FileData(
           declarationContainer = declarationContainer,
@@ -557,7 +569,11 @@ public class ReflectiveClassInspector private constructor(
     private val Method.jvmMethodSignature: String get() = "$name$descriptor"
 
     private val Constructor<*>.descriptor: String
-      get() = parameterTypes.joinToString(separator = "", prefix = "(", postfix = ")V") { it.descriptor }
+      get() = parameterTypes.joinToString(
+        separator = "",
+        prefix = "(",
+        postfix = ")V"
+      ) { it.descriptor }
 
     /**
      * Returns the JVM signature in the form "<init>$MethodDescriptor", for example: `"<init>(Ljava/lang/Object;)V")`.

@@ -286,7 +286,12 @@ public class TypeSpec private constructor(
       for (funSpec in funSpecs) {
         if (!funSpec.isConstructor) continue
         if (!firstMember) codeWriter.emit("\n")
-        funSpec.emit(codeWriter, name, kind.implicitFunctionModifiers(modifiers + implicitModifiers), false)
+        funSpec.emit(
+          codeWriter,
+          name,
+          kind.implicitFunctionModifiers(modifiers + implicitModifiers),
+          false
+        )
         firstMember = false
       }
 
@@ -294,13 +299,23 @@ public class TypeSpec private constructor(
       for (funSpec in funSpecs) {
         if (funSpec.isConstructor) continue
         if (!firstMember) codeWriter.emit("\n")
-        funSpec.emit(codeWriter, name, kind.implicitFunctionModifiers(modifiers + implicitModifiers), true)
+        funSpec.emit(
+          codeWriter,
+          name,
+          kind.implicitFunctionModifiers(modifiers + implicitModifiers),
+          true
+        )
         firstMember = false
       }
 
       for (typeSpec in typeSpecs) {
         if (!firstMember) codeWriter.emit("\n")
-        typeSpec.emit(codeWriter, null, kind.implicitTypeModifiers(modifiers + implicitModifiers), isNestedExternal = areNestedExternal)
+        typeSpec.emit(
+          codeWriter,
+          null,
+          kind.implicitTypeModifiers(modifiers + implicitModifiers),
+          isNestedExternal = areNestedExternal
+        )
         firstMember = false
       }
 
@@ -462,8 +477,9 @@ public class TypeSpec private constructor(
     internal val isEnum get() = kind == Kind.CLASS && ENUM in modifiers
     internal val isAnnotation get() = kind == Kind.CLASS && ANNOTATION in modifiers
     internal val isCompanion get() = kind == Kind.OBJECT && COMPANION in modifiers
-    internal val isInlineOrValClass get() = kind == Kind.CLASS &&
-      (INLINE in modifiers || VALUE in modifiers)
+    internal val isInlineOrValClass
+      get() = kind == Kind.CLASS &&
+        (INLINE in modifiers || VALUE in modifiers)
     internal val isSimpleClass get() = kind == Kind.CLASS && !isEnum && !isAnnotation
     internal val isFunInterface get() = kind == Kind.INTERFACE && FUN in modifiers
 

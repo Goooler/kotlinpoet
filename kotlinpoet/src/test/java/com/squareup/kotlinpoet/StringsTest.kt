@@ -66,7 +66,8 @@ class StringsTest {
 
   // https://github.com/square/kotlinpoet/issues/572
   @Test fun templateStringWithStringLiteralReference() {
-    val string = "SELECT * FROM socialFeedItem WHERE message IS NOT NULL AND userId \${ if (userId == null) \"IS\" else \"=\" } ?1 ORDER BY datetime(creation_time) DESC"
+    val string =
+      "SELECT * FROM socialFeedItem WHERE message IS NOT NULL AND userId \${ if (userId == null) \"IS\" else \"=\" } ?1 ORDER BY datetime(creation_time) DESC"
     val funSpec = FunSpec.builder("getString")
       .addStatement("return %P", string)
       .build()

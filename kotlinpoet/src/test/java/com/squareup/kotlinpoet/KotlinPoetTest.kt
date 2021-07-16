@@ -1164,7 +1164,8 @@ class KotlinPoetTest {
       TypeSpec.enumBuilder("MyEnum")
         .addEnumConstant("with.dots") // dots are illegal, so this should fail
         .build().toString()
-    }.hasMessageThat().isEqualTo("Can't escape identifier `with.dots` because it contains illegal characters: .")
+    }.hasMessageThat()
+      .isEqualTo("Can't escape identifier `with.dots` because it contains illegal characters: .")
   }
 
   // https://github.com/square/kotlinpoet/issues/814

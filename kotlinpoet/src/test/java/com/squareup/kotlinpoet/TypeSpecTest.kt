@@ -28,14 +28,12 @@ import com.squareup.kotlinpoet.KModifier.PUBLIC
 import com.squareup.kotlinpoet.KModifier.VARARG
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.jvm.throws
-import org.junit.Rule
 import java.io.IOException
 import java.io.Serializable
 import java.math.BigDecimal
 import java.util.AbstractSet
 import java.util.Arrays
 import java.util.Collections
-import java.util.Comparator
 import java.util.EventListener
 import java.util.Locale
 import java.util.Random
@@ -49,6 +47,7 @@ import kotlin.test.Ignore
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.fail
+import org.junit.Rule
 
 class TypeSpecTest {
   private val tacosPackage = "com.squareup.tacos"
@@ -626,7 +625,9 @@ class TypeSpecTest {
     val sealedClass = TypeSpec.classBuilder("Sealed")
       .addModifiers(KModifier.SEALED)
       .addProperty(PropertySpec.builder("name", String::class).addModifiers(ABSTRACT).build())
-      .addFunction(FunSpec.builder("fold").addModifiers(KModifier.PUBLIC, KModifier.ABSTRACT).build())
+      .addFunction(
+        FunSpec.builder("fold").addModifiers(KModifier.PUBLIC, KModifier.ABSTRACT).build()
+      )
       .build()
     assertThat(toString(sealedClass)).isEqualTo(
       """
@@ -676,7 +677,10 @@ class TypeSpecTest {
       )
       .addProperty(
         PropertySpec.builder("contents", String::class).initializer("contents")
-          .getter(FunSpec.getterBuilder().addCode("println(%S)\nreturn field", "contents observed!").build())
+          .getter(
+            FunSpec.getterBuilder().addCode("println(%S)\nreturn field", "contents observed!")
+              .build()
+          )
           .build()
       )
       .build()
@@ -3216,7 +3220,9 @@ class TypeSpecTest {
     val className = ClassName("com.example", "Example")
     assertThat(TypeSpec.classBuilder(className).build().name).isEqualTo("Example")
     assertThat(TypeSpec.interfaceBuilder(className).build().name).isEqualTo("Example")
-    assertThat(TypeSpec.enumBuilder(className).addEnumConstant("A").build().name).isEqualTo("Example")
+    assertThat(
+      TypeSpec.enumBuilder(className).addEnumConstant("A").build().name
+    ).isEqualTo("Example")
     assertThat(TypeSpec.annotationBuilder(className).build().name).isEqualTo("Example")
   }
 
@@ -3874,7 +3880,8 @@ class TypeSpecTest {
           .build()
       )
         .build()
-    }.hasMessageThat().isEqualTo("modifiers [ABSTRACT, INTERNAL] must contain none of [INTERNAL, PROTECTED]")
+    }.hasMessageThat()
+      .isEqualTo("modifiers [ABSTRACT, INTERNAL] must contain none of [INTERNAL, PROTECTED]")
 
     assertThrows<IllegalArgumentException> {
       type.addFunctions(
@@ -3885,7 +3892,8 @@ class TypeSpecTest {
         )
       )
         .build()
-    }.hasMessageThat().isEqualTo("modifiers [ABSTRACT, INTERNAL] must contain none of [INTERNAL, PROTECTED]")
+    }.hasMessageThat()
+      .isEqualTo("modifiers [ABSTRACT, INTERNAL] must contain none of [INTERNAL, PROTECTED]")
   }
 
   @Test fun privateAbstractFunForbiddenInInterface() {
@@ -3898,7 +3906,8 @@ class TypeSpecTest {
           .build()
       )
         .build()
-    }.hasMessageThat().isEqualTo("modifiers [ABSTRACT, PRIVATE] must contain none or only one of [ABSTRACT, PRIVATE]")
+    }.hasMessageThat()
+      .isEqualTo("modifiers [ABSTRACT, PRIVATE] must contain none or only one of [ABSTRACT, PRIVATE]")
 
     assertThrows<IllegalArgumentException> {
       type.addFunctions(
@@ -3909,7 +3918,8 @@ class TypeSpecTest {
         )
       )
         .build()
-    }.hasMessageThat().isEqualTo("modifiers [ABSTRACT, PRIVATE] must contain none or only one of [ABSTRACT, PRIVATE]")
+    }.hasMessageThat()
+      .isEqualTo("modifiers [ABSTRACT, PRIVATE] must contain none or only one of [ABSTRACT, PRIVATE]")
   }
 
   @Test fun internalFunForbiddenInAnnotation() {
@@ -4155,7 +4165,8 @@ class TypeSpecTest {
         )
         .addSuperinterface(KFunction::class, "notOther")
         .build()
-    }.hasMessageThat().isEqualTo("no such constructor parameter 'notOther' to delegate to for type 'Taco'")
+    }.hasMessageThat()
+      .isEqualTo("no such constructor parameter 'notOther' to delegate to for type 'Taco'")
   }
 
   @Test fun failAddParamDelegateWhenNullConstructor() {
@@ -4163,7 +4174,8 @@ class TypeSpecTest {
       TypeSpec.classBuilder("Taco")
         .addSuperinterface(Runnable::class, "etc")
         .build()
-    }.hasMessageThat().isEqualTo("delegating to constructor parameter requires not-null constructor")
+    }.hasMessageThat()
+      .isEqualTo("delegating to constructor parameter requires not-null constructor")
   }
 
   @Test fun testAddedDelegateByParamName() {
@@ -4264,7 +4276,9 @@ class TypeSpecTest {
   @Test fun externalInterfaceWithMembers() {
     val typeSpec = TypeSpec.interfaceBuilder("Foo")
       .addModifiers(KModifier.EXTERNAL)
-      .addProperty(PropertySpec.builder("baz", String::class).addModifiers(KModifier.EXTERNAL).build())
+      .addProperty(
+        PropertySpec.builder("baz", String::class).addModifiers(KModifier.EXTERNAL).build()
+      )
       .addFunction(FunSpec.builder("bar").addModifiers(KModifier.EXTERNAL).build())
       .build()
 
@@ -4287,7 +4301,9 @@ class TypeSpecTest {
   @Test fun externalObjectWithMembers() {
     val typeSpec = TypeSpec.objectBuilder("Foo")
       .addModifiers(KModifier.EXTERNAL)
-      .addProperty(PropertySpec.builder("baz", String::class).addModifiers(KModifier.EXTERNAL).build())
+      .addProperty(
+        PropertySpec.builder("baz", String::class).addModifiers(KModifier.EXTERNAL).build()
+      )
       .addFunction(FunSpec.builder("bar").addModifiers(KModifier.EXTERNAL).build())
       .build()
 
@@ -4738,11 +4754,11 @@ class TypeSpecTest {
 
         import kotlin.Int
 
-        public class MyClass {
+        class MyClass {
           init {
           }
 
-          public val tacos: Int
+          val tacos: Int
         }
 
       """.trimIndent()
@@ -4763,13 +4779,13 @@ class TypeSpecTest {
 
         import kotlin.Int
 
-        public class MyClass {
-          public val tacos1: Int
+        class MyClass {
+          val tacos1: Int
 
           init {
           }
 
-          public val tacos2: Int
+          val tacos2: Int
         }
 
       """.trimIndent()
@@ -4789,8 +4805,8 @@ class TypeSpecTest {
 
         import kotlin.Int
 
-        public class MyClass {
-          public val tacos: Int
+        class MyClass {
+          val tacos: Int
 
           init {
           }
@@ -4828,14 +4844,14 @@ class TypeSpecTest {
 
         import kotlin.Int
 
-        public class MyClass(
-          public val tacos1: Int,
+        class MyClass(
+          val tacos1: Int,
           tacos2: Int
         ) {
           init {
           }
 
-          public val tacos2: Int = tacos2
+          val tacos2: Int = tacos2
         }
 
       """.trimIndent()
@@ -4959,14 +4975,14 @@ class TypeSpecTest {
       import kotlin.String
       import kotlin.Unit
 
-      public interface Taco {
-        public val foo: String
+      interface Taco {
+        val foo: String
 
-        public val fooWithDefault: String = "defaultValue"
+        val fooWithDefault: String = "defaultValue"
 
-        public fun bar(): String
+        fun bar(): String
 
-        public fun barWithDefault(): Unit {
+        fun barWithDefault(): Unit {
         }
       }
 

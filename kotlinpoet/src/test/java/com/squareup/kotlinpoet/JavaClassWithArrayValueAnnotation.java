@@ -6,13 +6,11 @@ import java.lang.annotation.RetentionPolicy;
 import static com.squareup.kotlinpoet.JavaClassWithArrayValueAnnotation.AnnotationWithArrayValue;
 
 @AnnotationWithArrayValue({
-    Object.class, Boolean.class
+  Object.class, Boolean.class
 })
 public class JavaClassWithArrayValueAnnotation {
 
-  @Retention(RetentionPolicy.RUNTIME)
-  @interface AnnotationWithArrayValue {
+  @Retention(RetentionPolicy.RUNTIME) @interface AnnotationWithArrayValue {
     Class[] value();
   }
-
 }

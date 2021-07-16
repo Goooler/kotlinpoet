@@ -118,7 +118,8 @@ class AnnotatedTypeNameTest {
 
   // https://github.com/square/javapoet/issues/431
   @Ignore @Test fun annotatedNestedType() {
-    val expected = "kotlin.collections.Map.@" + TypeUseAnnotation::class.java.canonicalName + " Entry"
+    val expected =
+      "kotlin.collections.Map.@" + TypeUseAnnotation::class.java.canonicalName + " Entry"
     val typeUseAnnotation = AnnotationSpec.builder(TypeUseAnnotation::class).build()
     val type = Map.Entry::class.asTypeName().copy(annotations = listOf(typeUseAnnotation))
     val actual = type.toString()

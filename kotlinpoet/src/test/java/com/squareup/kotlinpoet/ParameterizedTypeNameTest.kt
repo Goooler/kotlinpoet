@@ -18,7 +18,6 @@ package com.squareup.kotlinpoet
 
 import com.google.common.truth.Truth.assertThat
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.plusParameter
-import org.junit.Test
 import java.io.Closeable
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
@@ -27,6 +26,7 @@ import kotlin.reflect.KType
 import kotlin.reflect.KTypeProjection
 import kotlin.reflect.KVariance
 import kotlin.reflect.full.createType
+import org.junit.Test
 
 class ParameterizedTypeNameTest {
   @Test fun classNamePlusParameter() {
@@ -88,7 +88,8 @@ class ParameterizedTypeNameTest {
   }
 
   @Test fun arrayPlusNullableParameter() {
-    val invariantNullableCloseable = KTypeProjection(KVariance.INVARIANT, Closeable::class.createType(nullable = true))
+    val invariantNullableCloseable =
+      KTypeProjection(KVariance.INVARIANT, Closeable::class.createType(nullable = true))
     val typeName = Array<Unit>::class.createType(listOf(invariantNullableCloseable)).asTypeName()
     assertThat(typeName.toString()).isEqualTo("kotlin.Array<java.io.Closeable?>")
   }
@@ -121,23 +122,29 @@ class ParameterizedTypeNameTest {
     val outAnyOnTypeWithoutBoundsAndVariance: KMutableProperty<out Any>
   }
 
-  private fun assertKTypeProjections(kType: KType) = assertThat(kType.asTypeName().toString()).isEqualTo(kType.toString())
+  private fun assertKTypeProjections(kType: KType) =
+    assertThat(kType.asTypeName().toString()).isEqualTo(kType.toString())
 
   @Test fun kTypeOutProjection() = assertKTypeProjections(Projections::outVariance.returnType)
 
   @Test fun kTypeInProjection() = assertKTypeProjections(Projections::inVariance.returnType)
 
-  @Test fun kTypeInvariantNullableProjection() = assertKTypeProjections(Projections::invariantNullable.returnType)
+  @Test fun kTypeInvariantNullableProjection() =
+    assertKTypeProjections(Projections::invariantNullable.returnType)
 
   @Test fun kTypeStarProjection() = assertKTypeProjections(Projections::star.returnType)
 
-  @Test fun kTypeMultiVariantProjection() = assertKTypeProjections(Projections::multiVariant.returnType)
+  @Test fun kTypeMultiVariantProjection() =
+    assertKTypeProjections(Projections::multiVariant.returnType)
 
-  @Test fun kTypeOutAnyOnTypeWithoutBoundsVariance() = assertKTypeProjections(Projections::outAnyOnTypeWithoutBoundsAndVariance.returnType)
+  @Test fun kTypeOutAnyOnTypeWithoutBoundsVariance() =
+    assertKTypeProjections(Projections::outAnyOnTypeWithoutBoundsAndVariance.returnType)
 
-  private fun <Param : Closeable> withParam(): Param = throw NotImplementedError("for testing purposes")
+  private fun <Param : Closeable> withParam(): Param =
+    throw NotImplementedError("for testing purposes")
 
-  private fun <Param : Closeable> withNullableParam(): Param? = throw NotImplementedError("for testing purposes")
+  private fun <Param : Closeable> withNullableParam(): Param? =
+    throw NotImplementedError("for testing purposes")
 
   @Test fun annotatedLambdaTypeParameter() {
     val annotation = AnnotationSpec.builder(ClassName("", "Annotation")).build()

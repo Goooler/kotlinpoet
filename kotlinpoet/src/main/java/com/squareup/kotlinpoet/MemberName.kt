@@ -96,7 +96,13 @@ public data class MemberName internal constructor(
     enclosingClassName: ClassName,
     simpleName: String,
     isExtension: Boolean
-  ) : this(enclosingClassName.packageName, enclosingClassName, simpleName, operator = null, isExtension)
+  ) : this(
+    enclosingClassName.packageName,
+    enclosingClassName,
+    simpleName,
+    operator = null,
+    isExtension
+  )
 
   public constructor(
     packageName: String,
@@ -148,6 +154,7 @@ public data class MemberName internal constructor(
     @Suppress("NOTHING_TO_INLINE")
     @JvmSynthetic @JvmStatic public inline fun ClassName.member(simpleName: String): MemberName =
       MemberName(this, simpleName)
+
     @JvmStatic @JvmName("get") public fun KClass<*>.member(simpleName: String): MemberName =
       asClassName().member(simpleName)
 

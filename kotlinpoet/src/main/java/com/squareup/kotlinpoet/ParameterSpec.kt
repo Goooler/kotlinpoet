@@ -35,6 +35,7 @@ public class ParameterSpec private constructor(
 
   public constructor(name: String, type: TypeName, vararg modifiers: KModifier) :
     this(builder(name, type, *modifiers))
+
   public constructor(name: String, type: TypeName, modifiers: Iterable<KModifier>) :
     this(builder(name, type, modifiers))
 

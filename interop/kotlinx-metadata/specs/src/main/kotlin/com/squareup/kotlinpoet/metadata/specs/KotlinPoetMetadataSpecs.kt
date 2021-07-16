@@ -126,16 +126,16 @@ import com.squareup.kotlinpoet.metadata.specs.internal.toTypeParameterResolver
 import com.squareup.kotlinpoet.metadata.specs.internal.toTypeVariableName
 import com.squareup.kotlinpoet.metadata.toImmutableKmClass
 import com.squareup.kotlinpoet.tag
-import kotlinx.metadata.Flags
-import kotlinx.metadata.KmClassifier
-import kotlinx.metadata.jvm.JvmMethodSignature
-import kotlinx.metadata.jvm.jvmInternalName
 import java.util.Locale
 import javax.lang.model.element.Element
 import javax.lang.model.element.ElementKind
 import javax.lang.model.element.PackageElement
 import javax.lang.model.element.TypeElement
 import kotlin.reflect.KClass
+import kotlinx.metadata.Flags
+import kotlinx.metadata.KmClassifier
+import kotlinx.metadata.jvm.JvmMethodSignature
+import kotlinx.metadata.jvm.jvmInternalName
 
 /** @return a [TypeSpec] ABI representation of this [KClass]. */
 @KotlinPoetMetadataPreview
@@ -374,17 +374,18 @@ private fun ImmutableKmClass.toTypeSpec(
             primaryConstructorParams.putAll(spec.parameters.associateBy { it.name })
           }
       }
-      constructors.filter { !it.isPrimary }.takeIf { it.isNotEmpty() }?.let { secondaryConstructors ->
-        builder.addFunctions(
-          secondaryConstructors
-            .mapNotNull { kmConstructor ->
-              classData?.constructors?.get(kmConstructor)?.let { kmConstructor to it }
-            }
-            .map { (kmConstructor, constructorData) ->
-              kmConstructor.toFunSpec(classTypeParamsResolver, constructorData)
-            }
-        )
-      }
+      constructors.filter { !it.isPrimary }.takeIf { it.isNotEmpty() }
+        ?.let { secondaryConstructors ->
+          builder.addFunctions(
+            secondaryConstructors
+              .mapNotNull { kmConstructor ->
+                classData?.constructors?.get(kmConstructor)?.let { kmConstructor to it }
+              }
+              .map { (kmConstructor, constructorData) ->
+                kmConstructor.toFunSpec(classTypeParamsResolver, constructorData)
+              }
+          )
+        }
     }
     builder.addProperties(
       properties
@@ -527,11 +528,12 @@ private fun ImmutableKmConstructor.toFunSpec(
 }
 
 @KotlinPoetMetadataPreview
-private val ContainerData.isInterface: Boolean get() {
-  return declarationContainer.let { container ->
-    container is ImmutableKmClass && container.isInterface
+private val ContainerData.isInterface: Boolean
+  get() {
+    return declarationContainer.let { container ->
+      container is ImmutableKmClass && container.isInterface
+    }
   }
-}
 
 @KotlinPoetMetadataPreview
 private fun ImmutableKmFunction.toFunSpec(
@@ -801,7 +803,12 @@ private fun ImmutableKmProperty.toPropertySpec(
         )?.let(::getter)
       }
       if (hasSetter && !isDelegated && !isAbstract) {
-        propertyAccessor(modifierSet, setterFlags, FunSpec.setterBuilder(), isOverride)?.let(::setter)
+        propertyAccessor(
+          modifierSet,
+          setterFlags,
+          FunSpec.setterBuilder(),
+          isOverride
+        )?.let(::setter)
       }
     }
     .tag(this)
@@ -932,6 +939,7 @@ private inline fun <E> setOf(body: MutableSet<E>.() -> Unit): Set<E> {
 }
 
 private val METADATA = Metadata::class.asClassName()
+
 @Suppress("DEPRECATION")
 private val JVM_DEFAULT = JvmDefault::class.asClassName()
 private val JVM_STATIC = JvmStatic::class.asClassName()

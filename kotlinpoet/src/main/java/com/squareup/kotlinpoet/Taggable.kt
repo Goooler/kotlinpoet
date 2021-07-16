@@ -145,7 +145,8 @@ public inline fun <reified T : Any> TypeAliasSpec.Builder.tag(tag: T?): TypeAlia
 public inline fun <reified T : Any> TypeSpec.Builder.tag(tag: T?): TypeSpec.Builder =
   tag(T::class, tag)
 
-internal fun Taggable.Builder<*>.buildTagMap(): TagMap = TagMap(LinkedHashMap(tags)) // Defensive copy
+internal fun Taggable.Builder<*>.buildTagMap(): TagMap =
+  TagMap(LinkedHashMap(tags)) // Defensive copy
 
 internal class TagMap(tags: Map<KClass<*>, Any>) : Taggable {
   override val tags: Map<KClass<*>, Any> = tags.toImmutableMap()
